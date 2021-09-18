@@ -35,7 +35,7 @@ static OPENCV_BRANCH_32: Lazy<VersionReq> = Lazy::new(|| VersionReq::parse("~3.2
 static OPENCV_BRANCH_34: Lazy<VersionReq> = Lazy::new(|| VersionReq::parse("~3.4").expect("Can't parse OpenCV 3.4 version requirement"));
 static OPENCV_BRANCH_4: Lazy<VersionReq> = Lazy::new(|| VersionReq::parse("~4").expect("Can't parse OpenCV 4 version requirement"));
 
-static ENV_VARS: [&str; 16] = [
+static ENV_VARS: [&str; 17] = [
 	"OPENCV_PACKAGE_NAME",
 	"OPENCV_PKGCONFIG_NAME",
 	"OPENCV_CMAKE_NAME",
@@ -47,6 +47,7 @@ static ENV_VARS: [&str; 16] = [
 	"OPENCV_DISABLE_PROBES",
 	"OPENCV_MODULE_WHITELIST",
 	"OPENCV_MODULE_BLACKLIST",
+	"OPENCV_CLANG_TARGET",
 	"CMAKE_PREFIX_PATH",
 	"OpenCV_DIR",
 	"PKG_CONFIG_PATH",

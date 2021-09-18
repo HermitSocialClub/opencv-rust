@@ -204,6 +204,7 @@ pub struct Generator {
 	clang_include_dirs: Vec<PathBuf>,
 	opencv_include_dir: PathBuf,
 	src_cpp_dir: PathBuf,
+	target: Option<String>,
 	clang: Clang,
 }
 
@@ -478,8 +479,12 @@ impl<V: GeneratorVisitor> Drop for OpenCvWalker<'_, '_, V> {
 }
 
 impl Generator {
-	pub fn new(opencv_include_dir: &Path, additional_include_dirs: &[PathBuf], src_cpp_dir: &Path, clang: Clang) -> Self {
-		let clang_bin = clang_sys::support::Clang::find(None, &[]).expect("Can't find clang binary");
+	pub fn new(opencv_include_dir: &Path, additional_include_dirs: &[PathBuf], src_cpp_dir: &Path, target: Option<String>, clang: Clang) -> Self {
+		let args = match &target {
+			Some(target_string) => vec!["-target".to_string(), target_string.clone()],
+			None => vec![],
+		};
+		let clang_bin = clang_sys::support::Clang::find(None, args.as_slice()).expect("Can't find clang binary");
 		let mut clang_include_dirs = clang_bin.cpp_search_paths.unwrap_or_default();
 		for additional_dir in additional_include_dirs {
 			match canonicalize(additional_dir) {
@@ -496,6 +501,7 @@ impl Generator {
 			clang_include_dirs,
 			opencv_include_dir: canonicalize(opencv_include_dir).expect("Can't canonicalize opencv_include_dir"),
 			src_cpp_dir: canonicalize(src_cpp_dir).expect("Can't canonicalize src_cpp_dir"),
+			target,
 			clang,
 		}
 	}
@@ -531,6 +537,10 @@ impl Generator {
 		args.push("-includeocvrs_ephemeral.hpp".into());
 		// need to have c++14 here because VS headers contain features that require it
 		args.push("-std=c++14".into());
+		if let Some(target_string) = &self.target {
+			args.push("-target".into());
+			args.push(target_string.clone().into());
+		}
 		args
 	}
 

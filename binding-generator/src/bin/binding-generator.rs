@@ -79,6 +79,9 @@ fn main() {
 	let out_dir = PathBuf::from(args.next().expect("3rd argument must be output dir"));
 	let module = args.next().expect("4th argument must be module name");
 	let module = module.to_str().expect("Not a valid module name");
+	let target = args.next().expect("5th argument must be target name or `None`");
+	let target = target.into_string().expect("Not a valid target name");
+	let target = if target == "None" { None } else { Some(target) };
 	let version = get_version_from_headers(&opencv_header_dir).expect("Can't find the version in the headers");
 	let additional_include_dirs = if let Some(additional_include_dirs) = args.next() {
 		 additional_include_dirs.to_str()
@@ -93,6 +96,6 @@ fn main() {
 	};
 	let clang = Clang::new().expect("Cannot initialize clang");
 	let bindings_writer = RustNativeBindingWriter::new(&src_cpp_dir, &out_dir, module, &version, debug);
-	Generator::new(&opencv_header_dir, &additional_include_dirs, &src_cpp_dir, clang)
+	Generator::new(&opencv_header_dir, &additional_include_dirs, &src_cpp_dir, target, clang)
 		.process_opencv_module(&module, bindings_writer);
 }

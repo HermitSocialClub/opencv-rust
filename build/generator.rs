@@ -83,7 +83,8 @@ pub fn gen_wrapper(opencv_header_dir: &Path, opencv: &Library, generator_build: 
 	let start;
 	let clang = clang::Clang::new().expect("Cannot initialize clang");
 	println!("=== Clang: {}", clang::get_version());
-	let gen = binding_generator::Generator::new(&opencv_header_dir, &additional_include_dirs, &*SRC_CPP_DIR, clang);
+	let clang_target = env::var("OPENCV_CLANG_TARGET").ok();
+	let gen = binding_generator::Generator::new(&opencv_header_dir, &additional_include_dirs, &*SRC_CPP_DIR, clang_target.clone(), clang);
 	let additional_include_dirs = Arc::new(additional_include_dirs.iter().cloned()
 		.map(|p| p.to_str().expect("Can't convert additional include dir to UTF-8 string").to_string())
 		.collect::<Vec<_>>()
@@ -96,11 +97,13 @@ pub fn gen_wrapper(opencv_header_dir: &Path, opencv: &Library, generator_build: 
 		}
 		let opencv_header_dir = Arc::new(opencv_header_dir.to_owned());
 		start = Instant::now();
+		let target_arg = clang_target.unwrap_or("None".to_string());
 		modules.iter().for_each(|module| {
 			let token = job_server.acquire().expect("Can't acquire token from job server");
 			let join_handle = thread::spawn({
 				let additional_include_dirs = Arc::clone(&additional_include_dirs);
 				let opencv_header_dir = Arc::clone(&opencv_header_dir);
+				let target_arg = (&target_arg).clone();
 				move || {
 					let mut bin_generator = match HOST_TRIPLE.as_ref() {
 						Some(host_triple) => Command::new(OUT_DIR.join(format!("{}/release/binding-generator", host_triple))),
@@ -110,6 +113,7 @@ pub fn gen_wrapper(opencv_header_dir: &Path, opencv: &Library, generator_build: 
 						.arg(&*SRC_CPP_DIR)
 						.arg(&*OUT_DIR)
 						.arg(&module)
+						.arg(&target_arg)
 						.arg(additional_include_dirs.join(","));
 					eprintln!("=== Running binding generator binary: {:#?}", bin_generator);
 					let res = bin_generator.status().expect("Can't run bindings generator");

@@ -1,2 +1,6 @@
 Cargo.lock
 target
+.idea
+
+# Ignore all generated files
+src/opencv/hub/**

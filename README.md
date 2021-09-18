@@ -1,8 +1,6 @@
 # Rust OpenCV bindings
-
-[![Github Actions](https://github.com/twistedfall/opencv-rust/workflows/opencv-rust/badge.svg)](https://github.com/twistedfall/opencv-rust/actions?query=workflow%3Aopencv-rust)
-[![Documentation](https://docs.rs/opencv/badge.svg)](https://docs.rs/opencv)
-[![Package](https://img.shields.io/crates/v/opencv.svg)](https://crates.io/crates/opencv)
+## but Arc'blroth patched it so that it actually builds on Android
+<br>
 
 Experimental Rust bindings for OpenCV 3 and 4.
 
@@ -16,6 +14,10 @@ generation) are installed in your system.
 Update your Cargo.toml
 ```toml
 opencv = "0.54"
+
+[patch.crates-io]
+opencv = { git = "https://github.com/HermitSocialClub/opencv-rust" }
+opencv-binding-generator = { git = "https://github.com/HermitSocialClub/opencv-rust" }
 ```
 
 Import prelude
@@ -221,6 +223,9 @@ The following variables are rarely used, but you might need them under some circ
   generate the specified modules, setting blacklist will exclude the specified modules from generation. If the
   same module is specified in both list it will be excluded (i.e. blacklist has precedence). E.g.
   "core,dnn,features2d" .
+
+* `OPENCV_CLANG_TARGET`
+  A target triple to pass to Clang when generating bindings.
 
 The following variables affect the building the of the `opencv` crate, but belong to external components:
 
