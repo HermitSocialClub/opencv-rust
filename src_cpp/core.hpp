@@ -1,10 +1,11 @@
 #include "ocvrs_common.hpp"
+// Disable these for Android
 #include <opencv2/core/affine.hpp>
-#include <opencv2/core/directx.hpp>
-#include <opencv2/core/ocl.hpp>
-#include <opencv2/core/va_intel.hpp>
+// #include <opencv2/core/directx.hpp>
+// #include <opencv2/core/ocl.hpp>
+// #include <opencv2/core/va_intel.hpp>
 #include <opencv2/core/cuda.hpp>
-#include <opencv2/core/opengl.hpp>
+// #include <opencv2/core/opengl.hpp>
 #if (CV_VERSION_MAJOR == 3 && CV_VERSION_MINOR == 4 && CV_VERSION_REVISION >= 4) /* 3.4.4+ */ \
 	|| (CV_VERSION_MAJOR == 4) /* 4.0+ */
 	#include <opencv2/core/bindings_utils.hpp>
